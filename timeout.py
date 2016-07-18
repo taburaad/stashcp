@@ -3,7 +3,7 @@ import os
 import time
 import subprocess
 import signal
-import threading
+import multiprocessing
 
 
 parser = argparse.ArgumentParser(description='Process some integers.')
@@ -41,7 +41,7 @@ def start_watchdog(xrdcp,timeout=results.timeout,filename=results.filename,diff=
 
 xrdcp=subprocess.Popen(['./2.sh'],shell=True)
 
-watchdog=threading.Thread(target=start_watchdog,args=[xrdcp])
+watchdog=multiprocessing.Process(target=start_watchdog,args=[xrdcp])
 watchdog.start()
 
 print "watchdog started, stream now"
@@ -49,4 +49,8 @@ streamdata=xrdcp.communicate()[0]
 
 print "xrdcp exit code: ", xrdcp.returncode
 
+print watchdog, watchdog.is_alive()
+watchdog.terminate()
+time.sleep(1)
+print watchdog, watchdog.is_alive()
 print "done"

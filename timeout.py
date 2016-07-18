@@ -2,7 +2,8 @@ import argparse
 import os
 import time
 import subprocess
-import sys
+import signal
+import threading
 
 
 parser = argparse.ArgumentParser(description='Process some integers.')
@@ -12,7 +13,7 @@ parser.add_argument('-d', dest='diff', type=int)
 parser.add_argument('-s', dest='expSize', type=int)
 results = parser.parse_args()
 
-def start_watchdog(xrdpid,timeout=results.timeout,filename=results.filename,diff=results.diff,expSize=results.expSize):
+def start_watchdog(xrdcp,timeout=results.timeout,filename=results.filename,diff=results.diff,expSize=results.expSize):
     prevSize=0
     newSize=0
     while (newSize<expSize):
@@ -24,16 +25,28 @@ def start_watchdog(xrdpid,timeout=results.timeout,filename=results.filename,diff
                 wantSize=nextSize
             else:
                 wantSize=expSize
-            if newSize > wantSize:
+            if newSize < wantSize:
                 print 'kill'
-                os.killpg(os.getpgid(xrdcp.pid), signal.SIGTERM)
+                #os.killpg(xrdpid, signal.SIGKILL)
+                xrdcp.kill()
+                newSize=expSize
+                return "killed"
             else:
                 prevSize=os.stat(filename).st_size
         else:
             print "did not start"
-            xrdcp.terminate()
+            xrdcp.kill()
+            newSize=expSize
+            return "did not start"
 
-xrdcp=subprocess.Popen(['./2.sh &'],stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+xrdcp=subprocess.Popen(['./2.sh'],shell=True)
 
-start_watchdog(xrdpid=xrdcp.pid)
+watchdog=threading.Thread(target=start_watchdog,args=[xrdcp])
+watchdog.start()
+
+print "watchdog started, stream now"
+streamdata=xrdcp.communicate()[0]
+
+print "xrdcp exit code: ", xrdcp.returncode
+
 print "done"

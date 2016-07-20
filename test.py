@@ -1,5 +1,5 @@
 import subprocess
-import threading
+import multiprocessing
 import time
 
 def testing(input1):
@@ -10,9 +10,13 @@ def testing(input1):
 
 
 xrdcp=subprocess.Popen(['./2.sh'],shell=True)
-background=threading.Thread(target=testing,args=['hello'])
+background=multiprocessing.Process(target=testing,args=['hello'])
 background.start()
 
 print "hi"
 stream=xrdcp.communicate()[0]
 print xrdcp.returncode
+print background, background.is_alive()
+background.terminate()
+time.sleep(2)
+print background, background.is_alive()

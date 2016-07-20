@@ -2,7 +2,6 @@ import argparse
 import os
 import time
 import subprocess
-import signal
 import multiprocessing
 
 
@@ -26,15 +25,12 @@ def start_watchdog(xrdcp,timeout=results.timeout,filename=results.filename,diff=
             else:
                 wantSize=expSize
             if newSize < wantSize:
-                print 'kill'
-                #os.killpg(xrdpid, signal.SIGKILL)
                 xrdcp.kill()
                 newSize=expSize
                 return "killed"
             else:
                 prevSize=os.stat(filename).st_size
         else:
-            print "did not start"
             xrdcp.kill()
             newSize=expSize
             return "did not start"
@@ -47,7 +43,8 @@ watchdog.start()
 print "watchdog started, stream now"
 streamdata=xrdcp.communicate()[0]
 
-print "xrdcp exit code: ", xrdcp.returncode
+xrd_exit=xrdcp.returncode
+print "xrdcp exit code: ", xrd_exit
 
 print watchdog, watchdog.is_alive()
 watchdog.terminate()

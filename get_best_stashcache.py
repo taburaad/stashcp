@@ -112,4 +112,4 @@ for s in Sites:
 if debug:
     print "#",minsite, mindist,"km"
 
-print minsite
+print minsite[:-1]

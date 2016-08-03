@@ -4,6 +4,7 @@ import subprocess
 import datetime
 import time
 import re
+import os
 
 
 
@@ -32,23 +33,37 @@ if not args.debug:
 else:
     xrdargs=1
 
-TIMEOUT = 60
+TIMEOUT = 1
 DIFF = TIMEOUT * 10
+load=subprocess.Popen(['module load xrootd/4.2.1'],stdout=subprocess.PIPE,shell=True)
+
+
+
+
 
 def doStashCpSingle(sourceFile=args.source, destination=args.destination):
     output = subprocess.Popen(["xrdfs", "root://data.ci-connect.net", "stat", sourceFile], stdout=subprocess.PIPE).communicate()[0]
     fileSize=re.findall(r"Size:   \d+",output)[0].split(":   ")[1]
-    date=datetime.datetime.now()
-    start1=time.mktime(date.timetuple())
     cache=find_closest()
     command = "python ./timeout.py -t "+str(TIMEOUT)+ " -f "+sourceFile + " -d "+str(DIFF)+" -s "+fileSize+" -x "+str(xrdargs)+" -c "+cache+" -z "+destination
-    print command
+    date=datetime.datetime.now()
+    start1=int(time.mktime(date.timetuple()))
     copy=subprocess.Popen([command],stdout=subprocess.PIPE,shell=True)
     xrd_exit=copy.communicate()[0].split()[-1]
+    date=datetime.datetime.now()
+    end1=int(time.mktime(date.timetuple()))
+    dltime=end1-start1
+    filename=destination+'/'+sourceFile.split('/')[-1]
+    print filename
+    dlSz=os.stat(filename).st_size
+    print dlSz
+    #payload="{ \"timestamp\" : ${timestamp}, \"host\" : \"${hn}\"
+
     print "xrdcp exit code: ",xrd_exit
     print cache
     print fileSize
-    print start1
+    print 'start: ',start1
+    print 'end: ',end1
 
 
 doStashCpSingle()

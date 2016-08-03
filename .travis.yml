@@ -1,31 +1,10 @@
-sudo: required
-laguage: python
-env:
-  global:
-    - OS_TYPE=centos OS_VERSION=7
-  matrix:
-    - CVMFS_EXTERNAL_URL="http://hcc-stash.unl.edu:8000/"
-    - CVMFS_EXTERNAL_URL="http://stashcache.grid.uchicago.edu:8000/"
-    - CVMFS_EXTERNAL_URL="http://xrd-cache-1.t2.ucsd.edu:8000/"
-    - CVMFS_EXTERNAL_URL="http://mwt2-stashcache.campuscluster.illinois.edu:8000/"
-  
-services:
-  - docker
+language: python
 
 notifications:
   email:
     recipients:
       - taburaad@uchicago.edu
     
-  
-before_install:
-  - sudo apt-get update
-  - echo 'DOCKER_OPTS="-H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock -s devicemapper"' | sudo tee /etc/default/docker > /dev/null
-  - sudo service docker restart
-  - sleep 5
-  - sudo docker pull ${OS_TYPE}:${OS_TYPE}${OS_VERSION}
-
-  
 script:
   # Run tests in Container
   - tests/test.py

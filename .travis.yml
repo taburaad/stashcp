@@ -8,4 +8,4 @@ notifications:
     
 script:
   # Run tests in Container
-  - tests/test.py
+  - tests/test.sh

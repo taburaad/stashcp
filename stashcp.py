@@ -68,8 +68,27 @@ def doStashCpSingle(sourceFile=source, destination=destination):
         dltime=end1-start1
         status = 'Success'
         tries=1
-        payload="{ \"timestamp\" : %d, \"host\" : '%s', \"filename\" : '%s', \"filesize\" : %d, \"download_size\" : %d, \"download_time\" : %d,  \"sitename\" : '%s', \"destination_space\" : %d, \"status\" : '%s', \"xrdexit1\" : %s, \"xrdexit2\" : %d, \"xrdexit3\" : %d, \"tries\" : %d, \"xrdcp_version\" : '%s', \"start1\" : %d, \"end1\" : %d, \"start2\" : %d, \"end2\" : %d, \"start3\" : %d, \"cache\" : '%s'}" % (end1, cache, sourceFile, fileSize, dlSz, dltime, sitename, destSpace, status, xrd_exit, xrdexit2, xrdexit3, tries, xrdcp_version, start1, end1, start2, end2, start3, cache)
-        payload="'"+payload.replace("'", '"')+"'"
+        payload={}
+        payload['timestamp']=end1
+        payload['host']=cache
+        payload['filename']=sourceFile
+        payload['filesize']=fileSize
+        payload['download_size']=dlSz
+        payload['download_time']=dltime
+        payload['sitename']=sitename
+        payload['destination_space']=destSpace
+        payload['status']=status
+        payload['xrdexit1']=xrd_exit
+        payload['xrdexit2']=xrdexit2
+        payload['xrdexit3']=xrdexit3
+        payload['tries']=tries
+        payload['xrdcp_version']=xrdcp_version
+        payload['start1']=start1
+        payload['end1']=end1
+        payload['start2']=start2
+        payload['end2']=end2
+        payload['start3']=start3
+        payload['cache']=cache
         try:
             p = multiprocessing.Process(target=es_send, name="es_send", args=(payload,))
             p.start()
@@ -90,8 +109,27 @@ def doStashCpSingle(sourceFile=source, destination=destination):
             status = 'Success'
             tries=2
             dltime=end2-start2
-            payload="{ \"timestamp\" : %d, \"host\" : '%s', \"filename\" : '%s', \"filesize\" : %d, \"download_size\" : %d, \"download_time\" : %d,  \"sitename\" : '%s', \"destination_space\" : %d, \"status\" : '%s', \"xrdexit1\" : %s, \"xrdexit2\" : %d, \"xrdexit3\" : %d, \"tries\" : %d, \"xrdcp_version\" : '%s', \"start1\" : %d, \"end1\" : %d, \"start2\" : %d, \"end2\" : %d, \"start3\" : %d, \"cache\" : '%s'}" % (end2, cache, sourceFile, fileSize, dlSz, dltime, sitename, destSpace, status, xrd_exit, xrdexit2, xrdexit3, tries, xrdcp_version, start1, end1, start2, end2, start3, cache)
-            payload="'"+payload.replace("'", '"')+"'"
+            payload={}
+            payload['timestamp']=end1
+            payload['host']=cache
+            payload['filename']=sourceFile
+            payload['filesize']=fileSize
+            payload['download_size']=dlSz
+            payload['download_time']=dltime
+            payload['sitename']=sitename
+            payload['destination_space']=destSpace
+            payload['status']=status
+            payload['xrdexit1']=xrd_exit
+            payload['xrdexit2']=xrdexit2
+            payload['xrdexit3']=xrdexit3
+            payload['tries']=tries
+            payload['xrdcp_version']=xrdcp_version
+            payload['start1']=start1
+            payload['end1']=end1
+            payload['start2']=start2
+            payload['end2']=end2
+            payload['start3']=start3
+            payload['cache']=cache
             try:
                 p = multiprocessing.Process(target=es_send, name="es_send", args=(payload,))
                 p.start()
@@ -101,7 +139,7 @@ def doStashCpSingle(sourceFile=source, destination=destination):
                 print "Error curling to ES"
         else: #pull from origin
             print "2nd try failed on %s, pulling from origin" % cache
-            cache="root://data.ci-connect.net"
+            cache="root://stash.osgconnect.net"
             command = "python ./timeout.py -t "+str(TIMEOUT)+ " -f "+sourceFile + " -d "+str(DIFF)+" -s "+str(fileSize)+" -x "+str(xrdargs)+" -c "+cache+" -z "+destination
             date=datetime.datetime.now()
             start3=int(time.mktime(date.timetuple()))*1000
@@ -119,8 +157,27 @@ def doStashCpSingle(sourceFile=source, destination=destination):
                 print "stashcp failed"
                 status = 'Timeout'
                 tries = 3
-            payload="{ \"timestamp\" : %d, \"host\" : '%s', \"filename\" : '%s', \"filesize\" : %d, \"download_size\" : %d, \"download_time\" : %d,  \"sitename\" : '%s', \"destination_space\" : %d, \"status\" : '%s', \"xrdexit1\" : %s, \"xrdexit2\" : %d, \"xrdexit3\" : %d, \"tries\" : %d, \"xrdcp_version\" : '%s', \"start1\" : %d, \"end1\" : %d, \"start2\" : %d, \"end2\" : %d, \"start3\" : %d, \"cache\" : '%s'}" % (end3, cache, sourceFile, fileSize, dlSz, dltime, sitename, destSpace, status, xrd_exit, xrdexit2, xrdexit3, tries, xrdcp_version, start1, end1, start2, end2, start3, cache)
-            payload="'"+payload.replace("'", '"')+"'"
+            payload={}
+            payload['timestamp']=end1
+            payload['host']=cache
+            payload['filename']=sourceFile
+            payload['filesize']=fileSize
+            payload['download_size']=dlSz
+            payload['download_time']=dltime
+            payload['sitename']=sitename
+            payload['destination_space']=destSpace
+            payload['status']=status
+            payload['xrdexit1']=xrd_exit
+            payload['xrdexit2']=xrdexit2
+            payload['xrdexit3']=xrdexit3
+            payload['tries']=tries
+            payload['xrdcp_version']=xrdcp_version
+            payload['start1']=start1
+            payload['end1']=end1
+            payload['start2']=start2
+            payload['end2']=end2
+            payload['start3']=start3
+            payload['cache']=cache
             try:
                 p = multiprocessing.Process(target=es_send, name="es_send", args=(payload,))
                 p.start()
@@ -144,10 +201,18 @@ def dostashcpdirectory(sourceDir=source, destination=destination):
 
 
 def es_send(payload):
-    payload = payload
+    data = payload
+    data=json.dumps(data)
     try:
-        command="timeout 3 curl -XPOST uct2-collectd.mwt2.org:9951 -d "+payload+" > /dev/null 2>&1"
-        curl=subprocess.Popen([command],stdout=subprocess.PIPE,shell=True).communicate()
+        #command="timeout 3 curl -XPOST uct2-collectd.mwt2.org:9951 -d "+payload+" > /dev/null 2>&1"
+        #curl=subprocess.Popen([command],stdout=subprocess.PIPE,shell=True).communicate()
+        url = "http://uct2-int.mwt2.org:9951"
+        req = urllib2.Request(url, data=data, headers={'Content-Type': 'application/json'})
+        print req.get_data()
+        f = urllib2.urlopen(req)
+        response = f.read()
+        print(response)
+        f.close()
     except:
         print "Error posting to ES"
 

@@ -203,14 +203,10 @@ def es_send(payload):
     data = payload
     data=json.dumps(data)
     try:
-        #command="timeout 3 curl -XPOST uct2-collectd.mwt2.org:9951 -d "+payload+" > /dev/null 2>&1"
-        #curl=subprocess.Popen([command],stdout=subprocess.PIPE,shell=True).communicate()
         url = "http://uct2-collectd.mwt2.org:9951"
         req = urllib2.Request(url, data=data, headers={'Content-Type': 'application/json'})
-        print req.get_data()
         f = urllib2.urlopen(req)
         response = f.read()
-        print(response)
         f.close()
     except:
         print "Error posting to ES"

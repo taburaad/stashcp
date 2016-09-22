@@ -41,8 +41,7 @@ DIFF = TIMEOUT * 10
 
 def doStashCpSingle(sourceFile=source, destination=destination):
     xrdfs = subprocess.Popen(["xrdfs", "root://stash.osgconnect.net", "stat", sourceFile], stdout=subprocess.PIPE).communicate()[0]
-    fileSize=re.findall(r"Size:   \d+",xrdfs)[0].split(":   ")[1]
-    fileSize=int(fileSize)
+    fileSize=int(re.findall(r"Size:   \d+",xrdfs)[0].split(":   ")[1])
     cache=find_closest()
     command = "python ./timeout.py -t "+str(TIMEOUT)+ " -f "+sourceFile + " -d "+str(DIFF)+" -s "+str(fileSize)+" -x "+str(xrdargs)+" -c "+cache+" -z "+destination
     date=datetime.datetime.now()

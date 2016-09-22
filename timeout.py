@@ -4,7 +4,6 @@ import time
 import subprocess
 import multiprocessing
 
-
 parser = optparse.OptionParser()
 parser.add_option('-t', dest='timeout', type=int)
 parser.add_option('-f', dest='filename')
@@ -14,14 +13,6 @@ parser.add_option('-x', dest='xrdebug')
 parser.add_option('-c', dest='cache')
 parser.add_option('-z', dest='destination')
 results,opts = parser.parse_args()
-
-print results.timeout
-print results.filename
-print results.diff
-print results.expSize
-print results.xrdebug
-print results.cache
-print results.destination
 
 def start_watchdog(xrdcp,timeout=results.timeout,filename=results.filename,diff=results.diff,expSize=results.expSize):
     prevSize=0
